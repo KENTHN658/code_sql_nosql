@@ -1,0 +1,50 @@
+1.1 db.inventory.find({"dim_cm.0":{$lt:15},"dim_cm.1":{$gt:20}},{_id:0,instock:0})
+
+1.2 db.inventory.find({tags:{$all:["red","blank"]},dim_cm:{$elemMatch:{$gt:13,$lt:15}}})
+	
+1.3 db.inventory.find({$or:[{item:/^c/},{$and:[{qty:{$gte:75}},{tags:{$all:["blank"]}}]}]},{_id:0,size:0,dim_cm:0,instock:0})
+
+1.4 db.inventory.find({"instock.qty":{$gte:40},"instock.warehouse":'A'},{item:1,instock:1,_id:0})
+
+1.5 db.inventory.find({"instock.qty":{$gt:15,$lt:70}},{item:1,instock:1,_id:0})
+
+1.6 db.inventory.find({status:"D",tags:{$all:["blank"]}},{item:1,qty:1,"size.h":1,"size.w":1,status:1,tags:1,_id:0})
+
+1.7 db.inventory.find({instock:{$exists:false},qty:{$gt:45}},{item:1,qty:1,_id:0})
+
+1.8 db.inventory.aggregate([
+	{$match:{instock:{$size:2}}},
+  	{$group:{_id:"$status",total:{$sum:"$qty"}}},
+  	{$sort:{_id:-1}}
+   ])
+
+2.1 use plant
+
+2.2 db.herb.insertMany([{ _id: 'Oregano',
+			binomialName: 'Origanum vulgare',
+ 			Description: "Oregano is the common name for a perennial herbaceous plant, Origanum vulgare of the mint family 					(Lamiaceae), characterized by opposite, aromatic leaves and purple flowers. Another common name for this 				herb is wild marjoram (Bender and Bender 2005; Herbst 2001). Oregano also is the name employed for the 					leaves of this plant, used as a popular seasoning.",
+ 			ScientificClassification: 
+ 				{ Kingdom: 'Plantae',
+ 					Division: 'Magnoliophyta',
+ 					Class: 'Magnoliopsida',
+ 					Order: 'Lamiales',
+ 					Family: 'Lamiaceae',
+ 					Genus: 'Origanum',
+ 					Species: 'O. vulgare' } },
+			{ _id: 'Ginger',
+ 			binomialName: 'Zingiber officinale',
+ 			Description: ' Ginger is the common name for the monocotyledonous perennial plant Zingiber officinale, an erect 				plant in the Zingiberaceae family that is widely cultivated for its edible, underground rhizome 					(horizontal stem).',
+ 			ScientificClassification:{ Kingdom: 'Plantae',
+ 				Division: 'Magnoliophyta',
+ 				Class: 'Liliopsida',
+ 				Order: 'Zingiberales',
+ 				Family: 'Zingiberaceae',
+ 				Species: 'Z. officinale' },
+ 			Uses: [ 'food', 'perfume', 'medicine', 'landscaping' ] }
+			])
+
+3.1 db.inventory.updateOne({tags:{$all:["blank","red"]}},{$set:{"instock.0":{warehouse:"B",qty:10}},$currentDate:{lastModified:true}})
+
+3.2 db.inventory.replaceOne({_id:"64fca9296f1497bca106a53e",{item:"journal",qty:25,tags:["blank","red"],size:{h:14, w:21, 						uom:"cm"},status:"A",dim_cm:[14,21],instock:[{warehouse:"A",qty:5},{warehouse:"C",qty:15}]})
+
+3.3 db.inventory.deleteOne({"instock.0.qty":{$gt:15,$lt:75}})

@@ -1,0 +1,165 @@
+2. 	select ssn, fname, lname, address, bdate
+	from employee
+	where (extract(year from bdate) < 1965) and salary < 40000
+
+3.	select ssn, fname, lname
+	from employee 
+	where lname like '_a%s'  order by fname desc ,lname desc
+
+4.	select ssn, fname, lname
+	from employee
+	where super_ssn is null
+
+5.	select dname, s.fname, s.lname, round((s.salary-e.salary)*100/s.salary,2)
+	from employee as e, employee as s, department
+	where e.fname = 'Joyce' and e.lname = 'English' and e.dno = dnumber and mgr_ssn = s.ssn
+
+6.	select dname, e.fname, e.lname, s.fname, s.lname
+	from employee e, employee s, department
+	where e.dno = dnumber and mgr_ssn = s.ssn and dname !='Hardware' and dname != 'Sales'
+
+7.	select ssn, fname, lname, essn
+	from works_on right join employee on essn = ssn
+	where essn is null
+
+	select ssn, fname, lname, essn
+	from employee left join works_on on essn = ssn
+	where essn is null
+
+8.	select dname, pname, ssn, fname, hours
+	from employee, department, works_on, project
+	where ssn = essn and hours = 0 and pno = pnumber and dno = dnumber
+
+9.	select dname, pname, dlocation, plocation 
+	from department d, dept_locations dp, project
+	where d.dnumber = dp.dnumber and dp.dnumber = dnum and dp.dlocation = plocation order by d.dname asc, pname asc
+
+10. 	select ssn, fname, salary
+	from employee left join dependent on essn = ssn
+	where essn is null and salary > 80000
+
+11.	select d.dname, pname, plocation, dp.dlocation, fname, lname
+	from department d, project, employee, dept_locations dp
+	where dno = d.dnumber and d.dnumber = dp.dnumber and d.dnumber = dnum and d.dname='Software' and d.mgr_ssn = ssn
+
+12.	select e.ssn, e.fname, e.lname, e.salary, s.ssn, s.fname, s.lname, s.salary, round((s.salary-e.salary)*100/s.salary,2)
+	from employee e, employee s
+	where e.super_ssn = s.ssn and (s.salary-e.salary)*100/s.salary > 40
+
+13.	select count(ssn), round(avg(salary),2), max(salary), min(salary) 
+	from employee
+
+14.	select e.fname, e.salary, dname
+	from employee e, employee s, department
+	where s.fname = 'Jared' and s.lname = 'James' and s.dno = dnumber and (s.ssn = e.super_ssn or (s.ssn = e.ssn and s.salary > 	50000))
+
+	select count(e.ssn)
+	from employee e, employee s
+	where s.fname = 'Jared' and s.lname = 'James'  and (s.ssn = e.super_ssn or (s.ssn = e.ssn and s.salary > 50000))
+
+15.	select  dname,pname, sum(hours)
+	from department, project, works_on
+	where pno = pnumber and dnum = dnumber
+	group by pname,dname 
+	order by sum(hours) desc
+
+16.	select  dname,pname, sum(hours)
+	from department, project, works_on
+	where pno = pnumber and dnum = dnumber 
+	group by pname,dname 
+	having sum(hours) > 200
+	order by sum(hours) desc
+
+17.	select dnumber, dname, round(avg(salary),2), round(max(salary),2)
+	from employee, department
+	where dno=dnumber 
+	group by dname, dnumber
+	order by max(salary) desc
+
+18.	select  ssn, fname, lname, salary
+	from employee
+	where salary in (select max(salary)
+				from employee)
+
+19.	select super_ssn, count(*)
+	from employee
+	where super_ssn is not null 
+	group by super_ssn
+	order by super_ssn asc
+
+	select s.ssn, count(e.ssn)
+	from employee e, employee s
+	where s.ssn = e.super_ssn
+	group by s.ssn
+	order by s.ssn asc
+				
+
+
+20.	select e.super_ssn, s.fname, s.lname , count(e.ssn)
+	from employee e, employee s
+	where e.super_ssn is not null and e.super_ssn = s.ssn
+	group by e.super_ssn, s.fname, s.lname
+	order by e.super_ssn
+
+	select s.ssn,s.fname, s.lname, count(e.ssn)
+	from employee e, employee s
+	where s.ssn = e.super_ssn
+	group by s.ssn,s.fname, s.lname
+	order by s.ssn asc
+
+21.	INSERT INTO employee
+	VALUES ('Jack',NULL,'Bloom','222222222',NULL,NULL,NULL,NULL,NULL,2)
+
+	Key (dno)=(2) is not present in table "department".Query
+
+22.	insert into department
+	values ('Accounting',2,222222200,'1980-06-01')
+
+23.	INSERT INTO employee
+	VALUES ('Jack',NULL,'Bloom','222222222',NULL,NULL,NULL,NULL,NULL,2)
+
+	INSERT SUCCESSFUL
+
+24.	UPDATE department
+	SET dnumber = 16
+	WHERE dnumber = 6
+
+	Key (dnumber)=(6) is still referenced from table "dept_locations"
+
+25.	UPDATE department
+	SET mgr_start_date = 1995-02-01
+	WHERE dname = 'Administration'
+
+	column "mgr_start_date" is of type date but expression is of type integer
+
+	UPDATE department
+	SET mgr_start_date = '1995-02-01'
+	WHERE dname = 'Administration'
+
+	pass
+
+26.	UPDATE department
+	SET mgr_start_date = '01021995'
+	WHERE dname = 'Administration'
+	
+	date/time field value out of range: "01021995"
+
+27.	delete from employee
+	where ssn = '222222222'
+
+28.	delete from department
+	where mgr_ssn = '222222200'
+
+29.	update works_on 
+	set hours = 10
+	from department, project
+	where hours>45 and dname = 'Software' and dnumber = dnum and pnumber = pno
+
+30.	delete from works_on
+	using project, department, employee
+	where fname = 'Franklin' and lname = 'Wong' and dno = dnumber and dnumber = dnum and pnumber = pno and plocation = 'Bellaire'
+	returning works_on
+
+	select essn, hours
+	from works_on, project, department, employee
+	where fname = 'Franklin' and lname = 'Wong' and dno = dnumber and dnumber = dnum and pnumber = pno and plocation = 'Bellaire'
